@@ -12,4 +12,4 @@ I managed to get something, but...
 
 - Model preferred to nuke db via `docker compose down -v` instead of migration
 - My instructions in docs were imprecise or invalid, but I corrected them
-- Model itself could've been trained on old data given it has used zod from `astro::schema`
+- Model itself could've been trained on old data given it has used zod from `astro::schema`, but still it could correct itself after clarification

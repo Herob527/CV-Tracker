@@ -1,5 +1,5 @@
 import { ActionError, defineAction } from "astro:actions";
-import { z } from "astro:schema";
+import { z } from "astro/zod";
 
 const createOfferSchema = z.object({
   companyName: z.string().min(1).max(255),

@@ -1,5 +1,5 @@
 import { ActionError, defineAction } from "astro:actions";
-import { z } from "astro:schema";
+import { z } from "astro/zod";
 import { COOKIE_NAME, COOKIE_OPTIONS } from "@core/services/JwtService";
 import bcrypt from "bcrypt";
 
