@@ -4,7 +4,7 @@ import {
   jobOffers,
   type NewJobOffer,
 } from "@db/schema";
-import { and, eq, ilike, or, sql } from "drizzle-orm";
+import { and, eq, ilike, inArray, isNull, not, or, sql } from "drizzle-orm";
 import type { drizzle } from "drizzle-orm/node-postgres";
 
 type Drizzle = ReturnType<typeof drizzle>;
@@ -23,6 +23,12 @@ export default class JobOfferService {
     filters?: {
       status?: string;
       search?: string;
+      phoneValues?: string[];
+      addressValues?: string[];
+      phoneEmpty?: boolean;
+      addressEmpty?: boolean;
+      sortBy?: "CompanyName" | "JobTitle" | "Status" | "CreatedAt";
+      sortOrder?: "asc" | "desc";
     },
   ) {
     const offset = (page - 1) * PAGE_SIZE;
@@ -43,13 +49,38 @@ export default class JobOfferService {
       );
     }
 
+    if (filters?.phoneValues && filters.phoneValues.length > 0) {
+      const phoneConditions = [inArray(jobOffers.CompanyPhone, filters.phoneValues)];
+      if (filters.phoneEmpty) {
+        phoneConditions.push(or(isNull(jobOffers.CompanyPhone), eq(jobOffers.CompanyPhone, ""))!);
+      }
+      conditions.push(or(...phoneConditions)!);
+    } else if (filters?.phoneEmpty) {
+      conditions.push(or(isNull(jobOffers.CompanyPhone), eq(jobOffers.CompanyPhone, ""))!);
+    }
+
+    if (filters?.addressValues && filters.addressValues.length > 0) {
+      const addressConditions = [inArray(jobOffers.CompanyAddress, filters.addressValues)];
+      if (filters.addressEmpty) {
+        addressConditions.push(or(isNull(jobOffers.CompanyAddress), eq(jobOffers.CompanyAddress, ""))!);
+      }
+      conditions.push(or(...addressConditions)!);
+    } else if (filters?.addressEmpty) {
+      conditions.push(or(isNull(jobOffers.CompanyAddress), eq(jobOffers.CompanyAddress, ""))!);
+    }
+
     const where = and(...conditions);
+
+    const sortColumn = filters?.sortBy
+      ? jobOffers[filters.sortBy]
+      : jobOffers.CreatedAt;
+    const sortDirection = filters?.sortOrder === "asc" ? sql`ASC` : sql`DESC`;
 
     const offers = await this.#db
       .select()
       .from(jobOffers)
       .where(where)
-      .orderBy(sql`${jobOffers.CreatedAt} DESC`)
+      .orderBy(sql`${sortColumn} ${sortDirection}`)
       .limit(PAGE_SIZE)
       .offset(offset);
     const [{ count }] = await this.#db
@@ -160,5 +191,32 @@ export default class JobOfferService {
       .from(jobOfferChanges)
       .where(eq(jobOfferChanges.JobOfferId, offerId))
       .orderBy(sql`${jobOfferChanges.ChangedAt} DESC`);
+  }
+
+  async getFilterValues(ownerId: string) {
+    const phones = await this.#db
+      .selectDistinct({ value: jobOffers.CompanyPhone })
+      .from(jobOffers)
+      .where(
+        and(
+          eq(jobOffers.OwnerId, ownerId),
+          not(or(isNull(jobOffers.CompanyPhone), eq(jobOffers.CompanyPhone, ""))!),
+        ),
+      );
+
+    const addresses = await this.#db
+      .selectDistinct({ value: jobOffers.CompanyAddress })
+      .from(jobOffers)
+      .where(
+        and(
+          eq(jobOffers.OwnerId, ownerId),
+          not(or(isNull(jobOffers.CompanyAddress), eq(jobOffers.CompanyAddress, ""))!),
+        ),
+      );
+
+    return {
+      phones: phones.map((r) => r.value).filter(Boolean) as string[],
+      addresses: addresses.map((r) => r.value).filter(Boolean) as string[],
+    };
   }
 }

@@ -1,6 +1,7 @@
 import { create } from "./create";
 import { remove } from "./delete";
 import { get } from "./get";
+import { getFilterValues } from "./getFilterValues";
 import { list } from "./list";
 import { update } from "./update";
 import { uploadCv } from "./uploadCv";
@@ -12,4 +13,5 @@ export const offer = {
   list,
   get,
   uploadCv,
+  getFilterValues,
 };

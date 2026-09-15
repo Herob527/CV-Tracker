@@ -2,12 +2,17 @@ import { actions } from "astro:actions";
 import Modal from "@core/components/Modal";
 import Pagination from "@core/components/Pagination";
 import { useCallback, useEffect, useRef, useState } from "react";
+import OfferFilters, {
+  type OfferFiltersState,
+} from "./OfferFilters";
 
 interface JobOffer {
   Id: string;
   CompanyName: string;
   JobTitle: string;
   Status: "Applied" | "Interview" | "Offer" | "Declined";
+  CompanyPhone?: string | null;
+  CompanyAddress?: string | null;
 }
 
 const STATUS_CLASSES: Record<string, string> = {
@@ -23,21 +28,31 @@ export default function OffersList() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState<JobOffer | null>(null);
-  const [statusFilter, setStatusFilter] = useState("");
-  const [searchFilter, setSearchFilter] = useState("");
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const filtersRef = useRef<OfferFiltersState>({
+    search: "",
+    status: "",
+    phoneValues: [],
+    addressValues: [],
+    phoneEmpty: false,
+    addressEmpty: false,
+    sortBy: "CreatedAt",
+    sortOrder: "desc",
+  });
 
-  async function loadOffers(
-    p: number,
-    status?: string,
-    search?: string,
-  ) {
+  async function loadOffers(p: number, filters?: OfferFiltersState) {
+    const f = filters ?? filtersRef.current;
     setLoading(true);
     const { data } = await actions.offer.list({
       page: p,
       pageSize: 10,
-      status: status || undefined,
-      search: search || undefined,
+      status: f.status || undefined,
+      search: f.search || undefined,
+      phoneValues: f.phoneValues.length > 0 ? f.phoneValues : undefined,
+      addressValues: f.addressValues.length > 0 ? f.addressValues : undefined,
+      phoneEmpty: f.phoneEmpty || undefined,
+      addressEmpty: f.addressEmpty || undefined,
+      sortBy: f.sortBy,
+      sortOrder: f.sortOrder,
     });
     if (data?.success) {
       setOffers(data.offers);
@@ -52,48 +67,24 @@ export default function OffersList() {
     loadOffers(1);
   }, []);
 
-  function handleStatusChange(newStatus: string) {
-    setStatusFilter(newStatus);
-    loadOffers(1, newStatus, searchFilter);
-  }
-
-  function handleSearchChange(newSearch: string) {
-    setSearchFilter(newSearch);
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      loadOffers(1, statusFilter, newSearch);
-    }, 300);
-  }
+  const handleFilterChange = useCallback(
+    (filters: OfferFiltersState) => {
+      filtersRef.current = filters;
+      loadOffers(1, filters);
+    },
+    [],
+  );
 
   async function handleDelete() {
     if (!deleteTarget) return;
     await actions.offer.delete({ id: deleteTarget.Id });
     setDeleteTarget(null);
-    loadOffers(page, statusFilter, searchFilter);
+    loadOffers(page);
   }
 
   return (
     <>
-      <div className="flex gap-3 mb-6">
-        <input
-          type="text"
-          placeholder="Search company or title..."
-          value={searchFilter}
-          onChange={(e) => handleSearchChange(e.target.value)}
-          className="flex-1 px-3 py-2 border border-gray-300 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
-        />
-        <select
-          value={statusFilter}
-          onChange={(e) => handleStatusChange(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
-        >
-          <option value="">All statuses</option>
-          <option value="Applied">Applied</option>
-          <option value="Interview">Interview</option>
-          <option value="Offer">Offer</option>
-          <option value="Declined">Declined</option>
-        </select>
-      </div>
+      <OfferFilters onFilterChange={handleFilterChange} />
       {loading ? (
         <p className="text-gray-500">Loading...</p>
       ) : offers.length === 0 ? (
@@ -139,7 +130,7 @@ export default function OffersList() {
       <Pagination
         currentPage={page}
         totalPages={totalPages}
-        onPageChange={(p) => loadOffers(p, statusFilter, searchFilter)}
+        onPageChange={(p) => loadOffers(p)}
       />
 
       <Modal
