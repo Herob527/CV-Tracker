@@ -36,7 +36,10 @@ export default class JobOfferService {
 
     if (filters?.status) {
       conditions.push(
-        eq(jobOffers.Status, filters.status as "Applied" | "Interview" | "Offer" | "Declined"),
+        eq(
+          jobOffers.Status,
+          filters.status as "Applied" | "Interview" | "Offer" | "Declined",
+        ),
       );
     }
     if (filters?.search) {
@@ -50,23 +53,38 @@ export default class JobOfferService {
     }
 
     if (filters?.phoneValues && filters.phoneValues.length > 0) {
-      const phoneConditions = [inArray(jobOffers.CompanyPhone, filters.phoneValues)];
+      const phoneConditions = [
+        inArray(jobOffers.CompanyPhone, filters.phoneValues),
+      ];
       if (filters.phoneEmpty) {
-        phoneConditions.push(or(isNull(jobOffers.CompanyPhone), eq(jobOffers.CompanyPhone, ""))!);
+        phoneConditions.push(
+          or(isNull(jobOffers.CompanyPhone), eq(jobOffers.CompanyPhone, ""))!,
+        );
       }
       conditions.push(or(...phoneConditions)!);
     } else if (filters?.phoneEmpty) {
-      conditions.push(or(isNull(jobOffers.CompanyPhone), eq(jobOffers.CompanyPhone, ""))!);
+      conditions.push(
+        or(isNull(jobOffers.CompanyPhone), eq(jobOffers.CompanyPhone, ""))!,
+      );
     }
 
     if (filters?.addressValues && filters.addressValues.length > 0) {
-      const addressConditions = [inArray(jobOffers.CompanyAddress, filters.addressValues)];
+      const addressConditions = [
+        inArray(jobOffers.CompanyAddress, filters.addressValues),
+      ];
       if (filters.addressEmpty) {
-        addressConditions.push(or(isNull(jobOffers.CompanyAddress), eq(jobOffers.CompanyAddress, ""))!);
+        addressConditions.push(
+          or(
+            isNull(jobOffers.CompanyAddress),
+            eq(jobOffers.CompanyAddress, ""),
+          )!,
+        );
       }
       conditions.push(or(...addressConditions)!);
     } else if (filters?.addressEmpty) {
-      conditions.push(or(isNull(jobOffers.CompanyAddress), eq(jobOffers.CompanyAddress, ""))!);
+      conditions.push(
+        or(isNull(jobOffers.CompanyAddress), eq(jobOffers.CompanyAddress, ""))!,
+      );
     }
 
     const where = and(...conditions);
@@ -200,7 +218,9 @@ export default class JobOfferService {
       .where(
         and(
           eq(jobOffers.OwnerId, ownerId),
-          not(or(isNull(jobOffers.CompanyPhone), eq(jobOffers.CompanyPhone, ""))!),
+          not(
+            or(isNull(jobOffers.CompanyPhone), eq(jobOffers.CompanyPhone, ""))!,
+          ),
         ),
       );
 
@@ -210,7 +230,12 @@ export default class JobOfferService {
       .where(
         and(
           eq(jobOffers.OwnerId, ownerId),
-          not(or(isNull(jobOffers.CompanyAddress), eq(jobOffers.CompanyAddress, ""))!),
+          not(
+            or(
+              isNull(jobOffers.CompanyAddress),
+              eq(jobOffers.CompanyAddress, ""),
+            )!,
+          ),
         ),
       );
 

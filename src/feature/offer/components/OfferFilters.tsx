@@ -2,6 +2,8 @@ import { actions } from "astro:actions";
 import Combobox from "@core/components/Combobox";
 import { useCallback, useRef, useState } from "react";
 
+const EMPTY_VALUE = "__empty__";
+
 export interface OfferFiltersState {
   search: string;
   status: string;
@@ -92,8 +94,16 @@ export default function OfferFilters({ onFilterChange }: OfferFiltersProps) {
         <Combobox
           label="Phone"
           options={phoneOptions}
-          selected={filters.phoneValues}
-          onChange={(phoneValues) => emitChange({ phoneValues })}
+          selected={
+            filters.phoneEmpty
+              ? [...filters.phoneValues, EMPTY_VALUE]
+              : filters.phoneValues
+          }
+          onChange={(values) => {
+            const phoneEmpty = values.includes(EMPTY_VALUE);
+            const phoneValues = values.filter((v) => v !== EMPTY_VALUE);
+            emitChange({ phoneValues, phoneEmpty });
+          }}
           includeEmpty
           placeholder="Search phones..."
           loading={phoneLoading}
@@ -104,8 +114,16 @@ export default function OfferFilters({ onFilterChange }: OfferFiltersProps) {
         <Combobox
           label="Address"
           options={addressOptions}
-          selected={filters.addressValues}
-          onChange={(addressValues) => emitChange({ addressValues })}
+          selected={
+            filters.addressEmpty
+              ? [...filters.addressValues, EMPTY_VALUE]
+              : filters.addressValues
+          }
+          onChange={(values) => {
+            const addressEmpty = values.includes(EMPTY_VALUE);
+            const addressValues = values.filter((v) => v !== EMPTY_VALUE);
+            emitChange({ addressValues, addressEmpty });
+          }}
           includeEmpty
           placeholder="Search addresses..."
           loading={addressLoading}
