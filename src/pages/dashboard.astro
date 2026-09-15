@@ -1,0 +1,38 @@
+---
+import OffersList from "@feature/offer/components/OffersList";
+import LogoutButton from "@feature/user/components/LogoutButton";
+import CreateOfferButton from "@feature/offer/components/CreateOfferButton";
+import Layout from "@layouts/Layout.astro";
+
+const user = Astro.locals.user;
+
+if (!user) {
+  return Astro.redirect("/login");
+}
+---
+
+<Layout title="Dashboard - CV Tracker">
+  <div class="min-h-screen bg-gray-50">
+    <nav class="bg-white shadow-sm">
+      <div
+        class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+        <a
+          href="/dashboard"
+          class="text-xl font-bold text-primary-600"
+          >CV Tracker</a
+        >
+        <div class="flex items-center gap-4">
+          <span class="text-sm text-gray-600">{user.Name} {user.Surname}</span>
+          <LogoutButton client:load />
+        </div>
+      </div>
+    </nav>
+    <main class="max-w-7xl mx-auto px-4 py-8">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold">Job Offers</h1>
+        <CreateOfferButton client:load />
+      </div>
+      <OffersList client:load />
+    </main>
+  </div>
+</Layout>

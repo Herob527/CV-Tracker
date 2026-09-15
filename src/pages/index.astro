@@ -1,17 +1,57 @@
 ---
-
+import Layout from "@layouts/Layout.astro";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="CV Tracker">
+  <div class="min-h-screen bg-gray-50">
+    <nav class="bg-white shadow-sm">
+      <div
+        class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
+        <h1 class="text-primary-600 text-xl font-bold">CV Tracker</h1>
+        <div class="flex items-center gap-4">
+          <a
+            href="/login"
+            class="text-primary-600 hover:underline"
+            >Login</a
+          >
+          <a
+            href="/register"
+            class="bg-primary-600 hover:bg-primary-700 rounded-sm px-4 py-2 text-white">
+            Register
+          </a>
+        </div>
+      </div>
+    </nav>
+    <main class="mx-auto max-w-4xl px-4 py-12">
+      <h2 class="mb-6 text-3xl font-bold">Track Your Job Applications</h2>
+      <p class="mb-8 text-gray-600">
+        Keep all your job applications organized in one place. Track statuses,
+        store CVs, and monitor your progress from application to offer.
+      </p>
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div class="rounded-sm bg-white p-6 shadow-sm">
+          <span
+            class="icon-[mdi--file-document-outline] text-primary-500 size-8"></span>
+          <h3 class="mt-3 mb-2 font-semibold">Track Applications</h3>
+          <p class="text-sm text-gray-500">
+            Log every job offer with company details and status.
+          </p>
+        </div>
+        <div class="rounded-sm bg-white p-6 shadow-sm">
+          <span class="icon-[mdi--history] text-primary-500 size-8"></span>
+          <h3 class="mt-3 mb-2 font-semibold">Status History</h3>
+          <p class="text-sm text-gray-500">
+            See a timeline of every status change for each application.
+          </p>
+        </div>
+        <div class="rounded-sm bg-white p-6 shadow-sm">
+          <span class="icon-[mdi--file-account] text-primary-500 size-8"></span>
+          <h3 class="mt-3 mb-2 font-semibold">Store CVs</h3>
+          <p class="text-sm text-gray-500">
+            Attach your CV files directly to each application.
+          </p>
+        </div>
+      </div>
+    </main>
+  </div>
+</Layout>

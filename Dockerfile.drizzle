@@ -1,0 +1,15 @@
+FROM oven/bun:1.3.14-debian AS base
+
+WORKDIR /app
+
+COPY package.json bun.lock /app/
+COPY drizzle.config.ts /app/
+COPY src/db/schema.ts /app/src/db/schema.ts
+
+RUN --mount=type=cache,target=/root/.bun/install/cache bun install --frozen-lockfile
+
+FROM base AS apply
+
+COPY src/db/seed.ts /app/src/db/seed.ts
+
+CMD ["sh", "-c", "bun run db:apply && bun run db:seed"]

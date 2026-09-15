@@ -1,1 +1,17 @@
 @import "tailwindcss";
+@plugin "@iconify/tailwind4";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-primary-50: oklch(0.805 0.091 272.55);
+  --color-primary-100: oklch(0.779 0.106 271.86);
+  --color-primary-200: oklch(0.728 0.132 269.97);
+  --color-primary-300: oklch(0.679 0.158 266.93);
+  --color-primary-400: oklch(0.628 0.185 263.72);
+  --color-primary-500: oklch(0.575 0.205 260.38);
+  --color-primary-600: oklch(0.524 0.188 260.57);
+  --color-primary-700: oklch(0.473 0.168 260.25);
+  --color-primary-800: oklch(0.42 0.15 260.47);
+  --color-primary-900: oklch(0.368 0.132 260.54);
+  --color-primary-950: oklch(0.342 0.122 260.25);
+}

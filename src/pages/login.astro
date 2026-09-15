@@ -1,0 +1,21 @@
+---
+import LoginForm from "@feature/user/components/LoginForm";
+import Layout from "@layouts/Layout.astro";
+---
+
+<Layout title="Login - CV Tracker">
+  <div class="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div class="bg-white p-8 rounded-sm shadow-sm w-full max-w-md">
+      <h1 class="text-2xl font-bold mb-6 text-center">Login</h1>
+      <LoginForm client:load />
+      <p class="mt-4 text-center text-sm text-gray-500">
+        Don't have an account?
+        <a
+          href="/register"
+          class="text-primary-600 hover:underline"
+          >Register</a
+        >
+      </p>
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,32 @@
+---
+import Layout from "@layouts/Layout.astro";
+import OfferDetail from "@feature/offer/components/OfferDetail";
+
+const { id } = Astro.params;
+if (!id) return Astro.redirect("/dashboard");
+---
+
+<Layout title="Offer Details - CV Tracker">
+  <div class="min-h-screen bg-gray-50">
+    <nav class="bg-white shadow-sm">
+      <div
+        class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+        <a
+          href="/dashboard"
+          class="text-xl font-bold text-primary-600"
+          >CV Tracker</a
+        >
+        <a
+          href="/dashboard"
+          class="text-sm text-primary-600 hover:underline"
+          >Back to Dashboard</a
+        >
+      </div>
+    </nav>
+    <main class="max-w-3xl mx-auto px-4 py-8">
+      <OfferDetail
+        offerId={id}
+        client:load />
+    </main>
+  </div>
+</Layout>
