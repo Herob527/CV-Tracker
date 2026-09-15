@@ -10,6 +10,4 @@ RUN --mount=type=cache,target=/root/.bun/install/cache bun install --frozen-lock
 
 FROM base AS apply
 
-COPY src/db/seed.ts /app/src/db/seed.ts
-
-CMD ["sh", "-c", "bun run db:apply && bun run db:seed"]
+CMD ["sh", "-c", "bun run db:apply"]
